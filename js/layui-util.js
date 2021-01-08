@@ -291,7 +291,7 @@ function layuiForm(form, option) {
             nameKey: 'name',
             widthTxt: el.width ? 'width:' + el.width : '',
             template:singleTitleTemp,
-            inputClass:el.type === "uloadImg" ? 'layui-input-block' : 'layui-input-inline'
+            inputClass:  ['uploadImg','radio','checkbox','textarea'].includes(el.type) ? 'layui-input-block' : 'layui-input-inline'
         }, el);
 
         if (typeof (el.height) !== "undefined" && el.height != null) {
@@ -310,7 +310,7 @@ function layuiForm(form, option) {
         for (var i = 0; i < this.option.els.length; i++) {
             var el = this.option.els[i];
             if(Array !== el.constructor ){
-                if( el.type === 'hidden' ){
+                if( el.type === 'hidden' || el.type === 'templet' ){
                     el = this.initElement(el);
                     var html = this.elementType[el.type].getHtml(el);
                     this.append(html);
@@ -411,8 +411,8 @@ function layuiForm(form, option) {
             $.each(el.rows, function (i, row) {
 
                 var input = $('<input />', {
-                    id: row[el.nameKey]
-                    ,name: row[el.nameKey]
+                    //id: row[el.nameKey]
+                    name: el.name
                     ,title: row[el.titleKey]
                     ,checked: (!!row.checked)
                     ,"lay-filter":el.name
@@ -420,11 +420,11 @@ function layuiForm(form, option) {
                     , value: typeof (row[el.valueKey]) === "undefined" ? null : row[el.valueKey]
                 });
 
-                checkboxs += input.prop("outerHTML")
-                    + '<div class="layui-unselect layui-form-checkbox">'
-                    + '<span>' + row[el.titleKey] + '</span>'
-                    + '<i class="layui-icon layui-icon-ok"></i>'
-                    + '</div>';
+                checkboxs += input.prop("outerHTML");
+                    // + '<div class="layui-unselect layui-form-checkbox">'
+                    // + '<span>' + row[el.titleKey] + '</span>'
+                    // + '<i class="layui-icon layui-icon-ok"></i>'
+                    // + '</div>';
             })
 
             // var html =
@@ -440,13 +440,23 @@ function layuiForm(form, option) {
         }
     }
 
-    var _uloadImg = function () {
+    var _uploadImg = function () {
         this.getHtml = function (el) {
             var html =
             '<button id="'+el.id+'" type="button" class="layui-btn">'
             +'<i class="layui-icon">&#xe67c;</i>上传图片'
             +'</button>';
             return html;
+        }
+    }
+
+    var _templet = function () {
+        this.getHtml = function (el) {
+            if( el.render ){
+                return el.render();
+            } else if(el.templet) {
+                return layui.laytpl($(el.templet).html()).render(el.d?el.d:{})
+            }
         }
     }
 
@@ -458,7 +468,8 @@ function layuiForm(form, option) {
         "select": new _select(),
         "checkbox": new _checkbox(),
         "radio": new _radio(),
-        "uloadImg": new _uloadImg(),
+        "uploadImg": new _uploadImg(),
+        "templet": new _templet(),
         // "lable": new _lable()
     };
 
