@@ -230,42 +230,28 @@ $.ajaxForm.defSuccess = function() {
     }
 }
 
-var singleTitleTemp =
-'    <div class="layui-form-item">'+
-'        <label class="layui-form-label">{{ d.el.title }}</label>'+
-'            {{# layui.each(d.els, function(index, item){ }}'+
-'            {{#  if(item.type === "uloadImg" ){  }}'+
-'            <div style="display: none" class="layui-input-block">'+
-'               <a href=""><img id="{{ item.id + "_img" }}" style="height: 100px" src="" /></a>'+
-'            </div>'+
-'            {{# } }}'+
-'            <div class="{{ item.inputClass }}" style="{{ item.widthTxt }}">'+
-'                {{ item.html }}'+
-'            </div>'+
-'            {{#  if(item.button1){  }}'+
-'            <div class="{{ item.inputClass }}" >'+
-'                <button type="button" id="{{ item.id }}_button1" class="layui-btn layui-btn-sm" style="margin-top: 3px" >{{ item.button1 }}</button>'+
-'            </div>'+
-'            {{# } }}'+
-'            {{# });  }}'+
-'    </div>';
 
-var multipleTitleTemp =
-'    <div class="layui-form-item">'+
-'        {{# layui.each(d.els, function(index, item){     }}'+
-'        <div class="layui-inline" >'+
-'            <label class="layui-form-label">{{ item.title }}</label>'+
-'            <div class="{{ item.inputClass }}" >'+
-'                {{ item.html }}'+
-'            </div>'+
-'            {{#  if(item.button1){  }}'+
-'            <div class="layui-input-inline" style="width: auto;" >'+
-'                <button type="button" id="{{ item.id }}_button1" class="layui-btn layui-btn-sm" style="margin-top: 6px" >{{ item.button1 }}</button>'+
-'            </div>'+
-'            {{# } }}'+
-'        </div>'+
-'        {{# });  }}'+
-'    </div>';
+var imageBegin = '<div style="display: none" class="layui-input-block" ><a target="_blank" href=""><img id="{{ item.id + "_img" }}" style="height: 100px" src="" /></a></div>';
+
+function getTemplate(el) {
+    var begin = el.begin(el);
+    var singleTitleTemp =
+        '    <div class="layui-form-item">'+
+        '        <label class="layui-form-label">{{ d.el.title }}</label>'+
+        '            {{# layui.each(d.els, function(index, item){ }}'+
+        begin +
+        '            <div class="{{ item.inputClass }}" style="{{ item.widthTxt }}">'+
+        '                {{ item.html }}'+
+        '            </div>'+
+        '            {{#  if(item.button1){  }}'+
+        '            <div class="{{ item.inputClass }}" >'+
+        '                <button type="button" id="{{ item.id }}_button1" class="layui-btn layui-btn-sm" style="margin-top: 3px" >{{ item.button1 }}</button>'+
+        '            </div>'+
+        '            {{# } }}'+
+        '            {{# });  }}'+
+        '    </div>';
+    return singleTitleTemp;
+}
 
 function layuiForm(form, option) {
 
@@ -283,15 +269,19 @@ function layuiForm(form, option) {
             placeholderText: ' placeholder=' + (el.placeholder || el.title) + ' ',
             verifyText: el.verify ? ' lay-verify="' + el.verify + '" ' : "",
             verTypeText: el.verType ? ' lay-verType="' + el.verType + '" ' : 'lay-verType="tips"',
-            disabledText: el.disabled ? ' disabled="' + el.disabled + '" ' : "",
+            disabledText: el.disabled ? ' disabled="disabled" ' : "",
             nameText: el.name ? ' name="' + el.name + '" ' : "",
             idText: ' id="' + (el.id || el.name) + '" ',
             titleKey: 'title',
             valueKey: 'value',
             nameKey: 'name',
             widthTxt: el.width ? 'width:' + el.width : '',
-            template:singleTitleTemp,
-            inputClass:  ['uploadImg','radio','checkbox','textarea'].includes(el.type) ? 'layui-input-block' : 'layui-input-inline'
+            inputClass:  ['uploadImg','radio','checkbox','textarea'].indexOf(el.type) > -1 ? 'layui-input-block' : 'layui-input-inline',
+            begin: el.type === 'uploadImg' ? function (el) {
+                return imageBegin;
+            } : function (el) {
+                return "";
+            }
         }, el);
 
         if (typeof (el.height) !== "undefined" && el.height != null) {
@@ -302,6 +292,13 @@ function layuiForm(form, option) {
 
         el.styleText = el.heightText;
         el.attributeText = el.idText + el.nameText + el.placeholderText + el.verifyText + el.verTypeText + el.disabledText;
+
+        if(el.type === "text" || el.type === "password" || el.type === "textarea"){
+            if( el.readonly ){
+                el.attributeText += ' readonly="readonly" '
+            }
+        }
+
         return el;
     }
 
@@ -331,10 +328,10 @@ function layuiForm(form, option) {
             subEl.html = this.elementType[subEl.type].getHtml(subEl);
             els[j] = subEl;
         }
-        layui.laytpl(els[0].template).render({el:els[0],els:els}, function (html) {
-            this.append(html);
-        }.bind(this));
+        var html = layui.laytpl(getTemplate(els[0])).render({el:els[0],els:els});
+        this.append(html);
     };
+
 
     this.append = function (html) {
         if (this.option.before != null) {
@@ -396,6 +393,7 @@ function layuiForm(form, option) {
                     ,type:'radio'
                     ,value: row[el.valueKey]
                     ,checked: (!!row.checked)
+                    ,disabled:el.disabled
                     ,'lay-filter':el.id
                 });
                 radio += input.prop("outerHTML");
@@ -409,31 +407,18 @@ function layuiForm(form, option) {
 
             var checkboxs = "";
             $.each(el.rows, function (i, row) {
-
                 var input = $('<input />', {
-                    //id: row[el.nameKey]
-                    name: el.name
+                    type:'checkbox'
+                    ,name: el.name+'['+row[el.nameKey]+']'
                     ,title: row[el.titleKey]
                     ,checked: (!!row.checked)
+                    ,disabled:el.disabled
                     ,"lay-filter":el.name
-                    ,type:'checkbox'
                     , value: typeof (row[el.valueKey]) === "undefined" ? null : row[el.valueKey]
                 });
-
                 checkboxs += input.prop("outerHTML");
-                    // + '<div class="layui-unselect layui-form-checkbox">'
-                    // + '<span>' + row[el.titleKey] + '</span>'
-                    // + '<i class="layui-icon layui-icon-ok"></i>'
-                    // + '</div>';
             })
 
-            // var html =
-            //     '<div class="layui-form-item">'
-            //     + '<label class="layui-form-label">' + el.title + '</label>'
-            //     + '<div class="layui-input-block">'
-            //     + checkboxs
-            //     + '</div>'
-            //     + '</div>';
 
             return checkboxs;
 
@@ -442,9 +427,11 @@ function layuiForm(form, option) {
 
     var _uploadImg = function () {
         this.getHtml = function (el) {
+            var upload = el.upload ? el.upload:'上传图片';
+
             var html =
             '<button id="'+el.id+'" type="button" class="layui-btn">'
-            +'<i class="layui-icon">&#xe67c;</i>上传图片'
+            +'<i class="layui-icon">&#xe67c;</i>' + upload
             +'</button>';
             return html;
         }

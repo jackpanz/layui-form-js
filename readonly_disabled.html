@@ -33,7 +33,8 @@
                     <form id="ff" lay-filter="ff" class="layui-form" enctype="multipart/form-data" method="post">
                         <div id="button-layout" class="layui-form-item">
                             <div class="layui-input-block">
-                                <button type="submit" class="layui-btn" lay-submit lay-filter="sm">提交</button>
+                                <button type="button" class="layui-btn" id="setData">Set Data</button>
+                                <button type="button" class="layui-btn" id="getData">Get Data</button>
                             </div>
                         </div>
                     </form>
@@ -43,24 +44,6 @@
         </div>
     </div>
 </div>
-
-<script id="templet" type="text/html" >
-
-    <div class="layui-form-item">
-        <label class="layui-form-label">{{ d.title }}</label>
-        <div class="layui-input-block" >
-            <select name="city" >
-            <option value="">select</option>
-            <option value="0">select0</option>
-            <option value="1">select1</option>
-            <option value="2">select2</option>
-            <option value="3">select3</option>
-            <option value="4">select4</option>
-            </select>
-        </div>
-    </div>
-
-</script>
 
 <script>
 
@@ -74,40 +57,34 @@
             before: '#button-layout',
             els: [
                 {type: 'hidden', name: 'id'},
-                {type: 'text', name: 'title_long', title: 'Text short'},
-                {type: 'password', name: 'password', title: 'password',button1:'button name'},
-                {type: 'text',name: 'title_short', title: 'Text long', inputClass: "layui-input-block"},
-                {type: 'select', name: 'select_long', title: 'Select short', rows: sRows },
-                {type: 'select', name: 'select_short', title: 'Select long', rows: sRows, inputClass: "layui-input-block"},
-                {type: 'uploadImg', name: 'image', title: 'Image upload',upload:'Upload image'},
-                {type: 'radio', name: 'radioz', title: 'radio' ,rows: rows},
-                {type: 'checkbox', name: 'checkboxz', title: 'Checkbox', rows: cRows},
-                {type: 'textarea', name: 'textareaz', title: 'Textarea', rows: rows},
-                {type: 'text', name: 'date', title: 'Date'},
-                {type: 'templet', templet:'#templet',d:{title:'title'}},
-                {type: 'templet',render:function () {
-                    return  $('#templet').html();
-                }},
+                {type: 'text', name: 'title_short', title: 'readonly', readonly: true},
+                {type: 'text', name: 'title_long', title: 'disabled', disabled: true},
+                {type: 'select', name: 'select_long', title: 'disabled', rows: sRows, disabled: true},
+                {type: 'radio', name: 'radioz', title: 'disabled' ,rows: rows, disabled: true},
+                {type: 'checkbox', name: 'checkboxz', title: 'disabled', rows: cRows, disabled: true},
+                {type: 'textarea', name: 'textareaz', title: 'Textarea', readonly: true},
+                {type: 'textarea', name: 'textareaz', title: 'Textarea', disabled: true},
             ]
         });
 
-        layui.laydate.render({
-            elem: '#date' //指定元素
-            ,trigger: 'click'
-        });
-        renderFile('image');
         layui.form.render();
 
-        $('#title_long_button1').click(function () {
-            alert('title_long_button1');
-        });
-
-        layui.form.on('submit(sm)', function (obj) {
-            alert(JSON.stringify($("#ff").serializeArray()));
-            return false;
-        });
-
     });
+
+    $("#setData").click(function () {
+        $.ajax({
+            url: 'data.json',
+            type: 'post',
+            success: function(data){
+                layui.form.val('ff', data);
+            }
+        });
+    });
+
+    $("#getData").click(function () {
+        alert(JSON.stringify($("#ff").serializeArray()));
+    });
+
 </script>
 
 </body>

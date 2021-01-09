@@ -1,0 +1,12 @@
+{
+  "title_short":"this is short",
+  "title_long":"title is long",
+  "select_long":"value1",
+  "select_short":"value2",
+  "radioz":"2",
+  "checkboxz[box1]":true,
+  "checkboxz[box2]":true,
+  "checkboxz[box3]":true,
+  "textareaz":"textarea textarea",
+  "date": "2050-01-01"
+}

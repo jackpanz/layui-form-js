@@ -33,7 +33,7 @@
                     <form id="ff" lay-filter="ff" class="layui-form" enctype="multipart/form-data" method="post">
                         <div id="button-layout" class="layui-form-item">
                             <div class="layui-input-block">
-                                <button type="submit" class="layui-btn" lay-submit lay-filter="sm">提交</button>
+                                <button type="submit" class="layui-btn" lay-submit lay-filter="sm">submit</button>
                             </div>
                         </div>
                     </form>
@@ -43,24 +43,6 @@
         </div>
     </div>
 </div>
-
-<script id="templet" type="text/html" >
-
-    <div class="layui-form-item">
-        <label class="layui-form-label">{{ d.title }}</label>
-        <div class="layui-input-block" >
-            <select name="city" >
-            <option value="">select</option>
-            <option value="0">select0</option>
-            <option value="1">select1</option>
-            <option value="2">select2</option>
-            <option value="3">select3</option>
-            <option value="4">select4</option>
-            </select>
-        </div>
-    </div>
-
-</script>
 
 <script>
 
@@ -74,20 +56,15 @@
             before: '#button-layout',
             els: [
                 {type: 'hidden', name: 'id'},
-                {type: 'text', name: 'title_long', title: 'Text short'},
-                {type: 'password', name: 'password', title: 'password',button1:'button name'},
-                {type: 'text',name: 'title_short', title: 'Text long', inputClass: "layui-input-block"},
-                {type: 'select', name: 'select_long', title: 'Select short', rows: sRows },
+                {type: 'text', name: 'required', title: 'Required',verify:"required"},
+                {type: 'text',name: 'email', title: 'Email', inputClass: "layui-input-block",verify:"required|email"},
+                {type: 'select', name: 'select_long', title: 'Select short', rows: sRows1,verify:"required"},
                 {type: 'select', name: 'select_short', title: 'Select long', rows: sRows, inputClass: "layui-input-block"},
-                {type: 'uploadImg', name: 'image', title: 'Image upload',upload:'Upload image'},
+                {type: 'uploadImg', name: 'image', title: 'Image upload'},
                 {type: 'radio', name: 'radioz', title: 'radio' ,rows: rows},
                 {type: 'checkbox', name: 'checkboxz', title: 'Checkbox', rows: cRows},
-                {type: 'textarea', name: 'textareaz', title: 'Textarea', rows: rows},
-                {type: 'text', name: 'date', title: 'Date'},
-                {type: 'templet', templet:'#templet',d:{title:'title'}},
-                {type: 'templet',render:function () {
-                    return  $('#templet').html();
-                }},
+                {type: 'textarea', name: 'textareaz', title: 'Textarea',verify:"required|length5",verType:"alert"},
+                {type: 'text', name: 'date', title: 'Date'}
             ]
         });
 
@@ -98,16 +75,21 @@
         renderFile('image');
         layui.form.render();
 
-        $('#title_long_button1').click(function () {
-            alert('title_long_button1');
-        });
-
         layui.form.on('submit(sm)', function (obj) {
             alert(JSON.stringify($("#ff").serializeArray()));
             return false;
         });
 
+        layui.form.verify({
+            length5: function(value){
+                if(value.length < 5){
+                    return 'length5 > 5';
+                }
+            }
+        });
+
     });
+
 </script>
 
 </body>
