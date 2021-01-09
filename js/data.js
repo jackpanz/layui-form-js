@@ -1,7 +1,7 @@
 var sRows = [
-    {title: "value0", value: "value0"},
-    {title: "value1", value: "value1"},
-    {title: "value2", value: "value2"},
+    {title: "title0", value: "value0"},
+    {title: "title1", value: "value1"},
+    {title: "title2", value: "value2"},
 ];
 
 var rows = [
@@ -22,4 +22,11 @@ var sRows1 = [
     {title: "", value: ""},
     {title: "value1", value: "value1"},
     {title: "value2", value: "value2"},
+];
+
+var vrows = [
+    {title: 'radio0', value: '0'},
+    {title: 'radio1', value: '1'},
+    {title: 'radio2', value: '2'},
+    {title: 'radio3', value: '3'}
 ];
