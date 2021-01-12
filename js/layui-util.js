@@ -13,6 +13,7 @@ function renderFile(name){
             var files = obj.pushFile();
             //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
             obj.preview(function(index, file, result){
+                $('#'+name+"_img").parent().parent();
                 $('#'+name+"_img").attr('src',result);
             });
         }

@@ -1,3 +1,6 @@
+/**
+ * v 1.0 2021-01-11
+ */
 layui.define(['form','upload','laydate','laytpl'],function (exports) {
 
     var _jquery = layui.jquery;
@@ -32,11 +35,6 @@ layui.define(['form','upload','laydate','laytpl'],function (exports) {
             for (var i = 0; i < option.els.length; i++) {
                 var el = option.els[i];
                 if(Array !== el.constructor ){
-                    // if( el.type === 'custom' ){
-                    //     el = this.initElement(el);
-                    //     this.append(el.custom.getHtml(el),option);
-                    //     continue;
-                    // } else if( el.type === 'hidden' || el.type === 'templet'){
                     if( el.type === 'hidden' || el.type === 'templet'){
                         el = this.initElement(el);
                         var html = this.elementType[el.type].getHtml(el);
@@ -74,7 +72,9 @@ layui.define(['form','upload','laydate','laytpl'],function (exports) {
                 nameKey: 'name',
                 readonly: false,
                 disabled: false,
-                inputClass:  ['uploadImg','radio','checkbox','textarea'].indexOf(el.type) > -1 ? 'layui-input-block' : 'layui-input-inline'
+                inputClass:  ['uploadImg','radio','checkbox','textarea'].indexOf(el.type) > -1 ? 'layui-input-block' : 'layui-input-inline',
+                itemClass: 'layui-form-item',
+                button1Class: 'layui-btn layui-btn-sm',
             }, el);
             return el;
         }
@@ -84,19 +84,21 @@ layui.define(['form','upload','laydate','laytpl'],function (exports) {
 });
 
 var singleTitleTemp =
-    '    <div class="layui-form-item">'+
-    '        <label class="layui-form-label">{{ d.el.title }}</label>'+
-    '            {{# layui.each(d.els, function(index, item){ }}'+
-    '            <div class="{{ item.inputClass }}" >'+
-    '                {{ item.html }}'+
-    '            </div>'+
-    '            {{#  if(item.button1){  }}'+
-    '            <div class="{{ item.inputClass }}" >'+
-    '                <button type="button" id="{{ item.id }}_button1" class="layui-btn layui-btn-sm" style="margin-top: 3px" >{{ item.button1 }}</button>'+
-    '            </div>'+
-    '            {{# } }}'+
-    '            {{# });  }}'+
-    '    </div>';
+    [
+        '<div id="{{ d.el.id }}_item" class="{{ d.el.itemClass }}">',
+        '   <label id="{{ d.el.id }}_label" class="layui-form-label">{{ d.el.title }}</label>',
+        '   {{# layui.each(d.els, function(index, item){ }}',
+        '   <div id="{{ item.id }}_input" class="{{ item.inputClass }}" >',
+        '	   {{ item.html }}',
+        '   </div>',
+        '   {{#  if(item.button1){  }}',
+        '   <div class="{{ item.inputClass }}" >',
+        '	   <button type="button" id="{{ item.id }}_button1" class="{{ item.button1Class }}" style="margin-top: 3px" >{{ item.button1 }}</button>',
+        '   </div>',
+        '   {{# } }}',
+        '   {{# }); }}',
+        '</div>'
+    ];
 
 var _text = function () {
     this.getHtml = function (el) {
@@ -116,7 +118,7 @@ var _text = function () {
         return tag.prop("outerHTML");
     };
     this.getTemplate = function (el) {
-        return singleTitleTemp;
+        return singleTitleTemp.join('');
     }
 }
 
@@ -139,7 +141,7 @@ var _password = function () {
         return tag.prop("outerHTML");
     };
     this.getTemplate = function (el) {
-        return singleTitleTemp;
+        return singleTitleTemp.join('');
     }
 }
 
@@ -161,7 +163,7 @@ var _textarea = function () {
         return tag.prop("outerHTML");
     };
     this.getTemplate = function (el) {
-        return singleTitleTemp;
+        return singleTitleTemp.join('');
     }
 }
 
@@ -197,7 +199,7 @@ var _select = function () {
         return tag.prop("outerHTML");
     }
     this.getTemplate = function (el) {
-        return singleTitleTemp;
+        return singleTitleTemp.join('');
     }
 }
 
@@ -221,7 +223,7 @@ var _radio = function () {
         return radio;
     }
     this.getTemplate = function (el) {
-        return singleTitleTemp;
+        return singleTitleTemp.join('');
     }
 }
 
@@ -245,7 +247,7 @@ var _checkbox = function () {
         return checkboxs;
     }
     this.getTemplate = function (el) {
-        return singleTitleTemp;
+        return singleTitleTemp.join('');
     }
 }
 
@@ -259,32 +261,17 @@ var _uploadImg = function () {
         return html;
     }
     this.getTemplate = function (el) {
-        var template =
-            '    <div class="layui-form-item">'+
-            '        <label class="layui-form-label">{{ d.el.title }}</label>'+
-            '            {{# layui.each(d.els, function(index, item){ }}'+
-            '            <div style="display: none" class="layui-input-block">'+
-            '               <a href=""><img id="{{ item.id + "_img" }}" style="height: 100px" src="" /></a>'+
-            '            </div>'+
-            '            <div class="{{ item.inputClass }}" >'+
-            '                {{ item.html }}'+
-            '            </div>'+
-            '            {{#  if(item.button1){  }}'+
-            '            <div class="{{ item.inputClass }}" >'+
-            '                <button type="button" id="{{ item.id }}_button1" class="layui-btn layui-btn-sm" style="margin-top: 3px" >{{ item.button1 }}</button>'+
-            '            </div>'+
-            '            {{# } }}'+
-            '            {{# });  }}'+
-            '    </div>';
-        return template;
+        var template = [].concat(singleTitleTemp);
+        var image = '<div id="{{ item.id + "_img_input" }}" style="display: none" class="layui-input-block">' +
+            '   <a id="{{ item.id + "_img_a" }}" href=""><img id="{{ item.id + "_img" }}" style="height: 100px" src="" /></a>'+
+            '</div>';
+        template.splice(3,0,image);
+        return template.join("");
     }
 }
 
 var _templet = function () {
     this.getHtml = function (el) {
         return el.render(el);
-    }
-    this.getTemplate = function (el) {
-        return singleTitleTemp;
     }
 }
