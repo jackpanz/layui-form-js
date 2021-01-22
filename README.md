@@ -60,3 +60,14 @@ layui.config({
 
 });
 ```
+# Layui form tags
+- text 
+- textarea 
+- hidden 
+- password 
+- select 
+- checkbox 
+- radio 
+- uploadImg 
+- templet(customize)
+
