@@ -81,7 +81,7 @@
     $("#setData").click(function () {
         $.ajax({
             url: 'data.json',
-            type: 'post',
+            type: 'get',
             success: function(data){
                 $("#ff :checkbox").prop("checked",false);
                 setCheckboxByArray("checkboxa",data.checkboxa.split(","));

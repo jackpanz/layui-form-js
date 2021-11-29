@@ -75,7 +75,7 @@
     $("#setData").click(function () {
         $.ajax({
             url: 'data.json',
-            type: 'post',
+            type: 'get',
             success: function(data){
                 // $(this).prop("checked", false);
                 $("#ff :checkbox").prop("checked",false);
