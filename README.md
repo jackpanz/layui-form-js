@@ -13,7 +13,9 @@ Download formjs.js to the layui modules directory.
 use formjs module.
 ```js
 layui.config({
-        base: 'layui-form-js/modules/'
+        base: 'layuiadmin/'
+}).extend({
+        formjs: 'lib/formjs'
 }).use(['formjs'], function () {
 
 });
