@@ -56,8 +56,6 @@ layui.config({
             }
         );
 
-        layui.form.render();
-
         layui.form.on('submit(sm)', function (obj) {
             alert(JSON.stringify($("#ff").serializeArray()));
             return false;

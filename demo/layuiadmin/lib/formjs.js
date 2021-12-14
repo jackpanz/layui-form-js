@@ -2,6 +2,10 @@
  * v 1.0 2021-01-11
  * v 1.1 2021-07-16
  *  更新方法位置
+ * v 1.2 2021-12-14
+ *  每一個動態表單元素可以和純html元素混排
+ *  在渲染完所有表單元素後添加 layui.form.render(); 方法
+ *
  */
 
 layui.define(['form','upload','laydate','laytpl'],function (exports) {
@@ -218,7 +222,12 @@ layui.define(['form','upload','laydate','laytpl'],function (exports) {
                 before: null
             };
             option = _jquery.extend({},defaults,option);
-            this.renderAll(option);
+            try {
+                this.renderAll(option);
+            }catch (e){
+
+            }
+            layui.form.render();
         },
         append: function (html, option, el) {
 
